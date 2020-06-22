@@ -1,12 +1,13 @@
 {
     "name": "yzh52521/schedule",
-    "description": "thinkphp task,schedule",
+    "description": "task schedule,schedule,thinkphp schedule,任务调度",
     "keywords": [
         "schedule",
         "task schedule",
         "thinkphp",
         "thinkphp6",
-        "thinkphp5.1"
+        "thinkphp5.1",
+        "think-schedule"
     ],
     "type": "library",
     "license": "MIT",

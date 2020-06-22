@@ -4,7 +4,6 @@ namespace schedule\console;
 
 use Carbon\Carbon;
 use think\Container;
-use think\Console;
 
 class Event
 {

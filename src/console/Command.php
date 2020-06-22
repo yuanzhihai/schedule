@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @Author: brooke
- * @Date:   2019-05-27 17:05:03
- * @Last Modified by:   brooke
- * @Last Modified time: 2019-05-28 17:22:18
- */
 
 
 namespace schedule\console;

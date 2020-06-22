@@ -35,7 +35,12 @@ class Event
     {
         $this->callBeforeCallbacks($container);
 
-        Console::call($this->command, $this->parameters, 'console');
+        if (strpos(\think\App::VERSION, '6.0') !== false) {
+            \think\facade\Console::call($this->command, $this->parameters, 'console');
+        }else{
+            \think\Console::call($this->command, $this->parameters, 'console');
+        }
+
 
         $this->callAfterCallbacks($container);
     }

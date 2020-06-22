@@ -2,8 +2,8 @@
 
 namespace schedule\console;
 
+use InvalidArgumentException;
 use think\Container;
-use Api\Exceptions\InvalidArgumentException;
 
 class CallbackEvent extends Event
 {
@@ -27,7 +27,7 @@ class CallbackEvent extends Event
     /**
      * Run the given event.
      *
-     * @param  \Illuminate\Contracts\Container\Container  $container
+     * @param  \think\Container  $container
      * @return mixed
      *
      * @throws \Exception

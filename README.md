@@ -7,6 +7,7 @@ thinkphp 任务调度
 
 第一步
 运行指令
+
 ```
 php think make:command Schedule schedule:run
 ```

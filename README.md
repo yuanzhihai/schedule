@@ -26,7 +26,8 @@ class Schedule extends Command
 
     protected function execute(Input $input, Output $output)
     {
-        $this->command('test')->everyMinute();
+        //每天的上午十点和晚上八点执行这个命令
+        $this->command('test')->twiceDaily(10, 20);
         parent::execute($input, $output);
     }
 }
@@ -44,7 +45,7 @@ php think make:command Test test
 return [
     'commands' => [
         'schedule:run'=>\app\command\Schedule::class,
-        'hello' => 'app\command\Hello',
+        'test' => 'app\command\Test',
     ]
 ];
 ```

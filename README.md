@@ -52,9 +52,79 @@ return [
 ];
 ```
 
-第三步，命令行下运行
+第三步,您应该在crontab中添加以下命令：
 
 ```
-php think schedule:run
+* * * * * php /path/to/think schedule:run  >> /dev/null 2>&1 
+```
+
+时间表范例
+此扩展支持Laravel Schedule的所有功能，环境和维护模式除外。
+Scheduling Closures
+```
+$this->call(function()
+{
+    // Do some task...
+
+})->hourly();
+```
+Running command of your application
+```
+$this->command('migrate')->cron('* * * * *');
+```
+Frequent Jobs
+```
+$this->command('foo')->everyFiveMinutes();
+
+$this->command('foo')->everyTenMinutes();
+
+$this->command('foo')->everyThirtyMinutes();
+```
+Daily Jobs
+```
+$this->command('foo')->daily();
+```
+Daily Jobs At A Specific Time (24 Hour Time)
+
+```
+$this->command('foo')->dailyAt('15:00');
+```
+Twice Daily Jobs
+```
+$this->command('foo')->twiceDaily();
+```
+Job That Runs Every Weekday
+```
+$this->command('foo')->weekdays();
+```
+Weekly Jobs
+```
+$this->command('foo')->weekly();
+
+// Schedule weekly job for specific day (0-6) and time...
+$this->command('foo')->weeklyOn(1, '8:00');
+```
+
+Monthly Jobs
+```
+$this->command('foo')->monthly();
+```
+Job That Runs On Specific Days
+```
+$this->command('foo')->mondays();
+$this->command('foo')->tuesdays();
+$this->command('foo')->wednesdays();
+$this->command('foo')->thursdays();
+$this->command('foo')->fridays();
+$this->command('foo')->saturdays();
+$this->command('foo')->sundays();
+```
+
+Only Allow Job To Run When Callback Is True
+```
+$this->command('foo')->monthly()->when(function()
+{
+    return true;
+});
 ```
 

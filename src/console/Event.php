@@ -3,6 +3,7 @@
 namespace schedule\console;
 
 use Carbon\Carbon;
+use Closure;
 use think\Container;
 
 class Event
@@ -34,7 +35,7 @@ class Event
     {
         $this->callBeforeCallbacks($container);
 
-        if (strpos(\think\App::VERSION, '6.0') !== false) {
+        if (strpos(\think\App::VERSION, '6') !== false) {
             \think\facade\Console::call($this->command, $this->parameters, 'console');
         }else{
             \think\Console::call($this->command, $this->parameters, 'console');

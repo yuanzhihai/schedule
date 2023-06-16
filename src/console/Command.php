@@ -1,7 +1,6 @@
 <?php
 
 
-
 namespace schedule\console;
 
 use think\Queue;
@@ -18,34 +17,34 @@ class Command extends ThinkCommand
 
     public function __construct($name = null)
     {
-        parent::__construct($name);
+        parent::__construct( $name );
 
         $this->app = Container::getInstance();
     }
 
-    public function call($callback, array $parameters = [])
+    public function call($callback,array $parameters = [])
     {
         $this->events[] = $event = new CallbackEvent(
-            $callback, $parameters
+            $callback,$parameters
         );
 
         return $event;
     }
 
-    public function command($command, array $parameters = [])
+    public function command($command,array $parameters = [])
     {
         $this->events[] = $event = new Event(
-            $command, $parameters
+            $command,$parameters
         );
 
         return $event;
     }
 
-    public function job($job, $data, $queue = null)
+    public function job($job,$data,$queue = null)
     {
-        return $this->call(function ($data) use ($job, $queue) {
-            Queue::push($job, $data, $queue);
-        }, [ $data ]);
+        return $this->call( function ($data) use ($job,$queue) {
+            Queue::push( $job,$data,$queue );
+        },[$data] );
     }
 
     /*
@@ -56,29 +55,28 @@ class Command extends ThinkCommand
             echo 11;
         })->twiceDaily(9, 20);
     */
-    protected function execute(Input $input, Output $output)
+    protected function execute(Input $input,Output $output)
     {
         $eventsRan = false;
 
-        foreach ($this->dueEvents($this->events) as $event) {
-        //foreach ($this->events as $event) {
-            if (! $event->filtersPass($this->app)) {
+        foreach ( $this->dueEvents( $this->events ) as $event ) {
+            if (!$event->filtersPass( $this->app )) {
                 continue;
             }
-            $event->run($this->app);
+            $event->run( $this->app );
 
             $eventsRan = true;
         }
 
-        if (! $eventsRan) {
-            $output->writeln('No scheduled commands are ready to run.');
+        if (!$eventsRan) {
+            $output->writeln( 'No scheduled commands are ready to run.' );
         }
     }
 
     public function dueEvents($app)
     {
-        return collect($this->events)->filter(function($event) use ($app){
-            return $event->isDue($app);
-        });
+        return collect( $this->events )->filter( function ($event) use ($app) {
+            return $event->isDue( $app );
+        } );
     }
 }

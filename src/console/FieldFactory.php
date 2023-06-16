@@ -26,8 +26,8 @@ class FieldFactory
      */
     public function getField($position)
     {
-        if (!isset($this->fields[$position])) {
-            switch ($position) {
+        if (!isset( $this->fields[$position] )) {
+            switch ( $position ) {
                 case 0:
                     $this->fields[$position] = new MinutesField();
                     break;
@@ -48,7 +48,7 @@ class FieldFactory
                     break;
                 default:
                     throw new InvalidArgumentException(
-                        $position . ' is not a valid position'
+                        $position.' is not a valid position'
                     );
             }
         }

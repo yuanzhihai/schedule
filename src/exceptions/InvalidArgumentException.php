@@ -7,4 +7,5 @@ namespace schedule\exceptions;
  */
 class InvalidArgumentException extends Exception
 {
+
 }

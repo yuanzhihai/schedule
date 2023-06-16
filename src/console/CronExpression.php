@@ -49,7 +49,7 @@ class CronExpression
     /**
      * @var array Order in which to test of cron parts
      */
-    private static $order = array(self::YEAR, self::MONTH, self::DAY, self::WEEKDAY, self::HOUR, self::MINUTE);
+    private static $order = array(self::YEAR,self::MONTH,self::DAY,self::WEEKDAY,self::HOUR,self::MINUTE);
 
     /**
      * Factory method to create a new CronExpression.
@@ -67,22 +67,22 @@ class CronExpression
      *
      * @return CronExpression
      */
-    public static function factory($expression, FieldFactory $fieldFactory = null)
+    public static function factory($expression,FieldFactory $fieldFactory = null)
     {
         $mappings = array(
-            '@yearly' => '0 0 1 1 *',
+            '@yearly'   => '0 0 1 1 *',
             '@annually' => '0 0 1 1 *',
-            '@monthly' => '0 0 1 * *',
-            '@weekly' => '0 0 * * 0',
-            '@daily' => '0 0 * * *',
-            '@hourly' => '0 * * * *'
+            '@monthly'  => '0 0 1 * *',
+            '@weekly'   => '0 0 * * 0',
+            '@daily'    => '0 0 * * *',
+            '@hourly'   => '0 * * * *'
         );
 
-        if (isset($mappings[$expression])) {
+        if (isset( $mappings[$expression] )) {
             $expression = $mappings[$expression];
         }
 
-        return new static($expression, $fieldFactory ?: new FieldFactory());
+        return new static( $expression,$fieldFactory ?: new FieldFactory() );
     }
 
     /**
@@ -96,8 +96,8 @@ class CronExpression
     public static function isValidExpression($expression)
     {
         try {
-            self::factory($expression);
-        } catch (InvalidArgumentException $e) {
+            self::factory( $expression );
+        } catch ( InvalidArgumentException $e ) {
             return false;
         }
 
@@ -107,13 +107,13 @@ class CronExpression
     /**
      * Parse a CRON expression
      *
-     * @param string       $expression   CRON expression (e.g. '8 * * * *')
+     * @param string $expression CRON expression (e.g. '8 * * * *')
      * @param FieldFactory $fieldFactory Factory to create cron fields
      */
-    public function __construct($expression, FieldFactory $fieldFactory)
+    public function __construct($expression,FieldFactory $fieldFactory)
     {
         $this->fieldFactory = $fieldFactory;
-        $this->setExpression($expression);
+        $this->setExpression( $expression );
     }
 
     /**
@@ -126,15 +126,15 @@ class CronExpression
      */
     public function setExpression($value)
     {
-        $this->cronParts = preg_split('/\s/', $value, -1, PREG_SPLIT_NO_EMPTY);
-        if (count($this->cronParts) < 5) {
+        $this->cronParts = preg_split( '/\s/',$value,-1,PREG_SPLIT_NO_EMPTY );
+        if (count( $this->cronParts ) < 5) {
             throw new InvalidArgumentException(
-                $value . ' is not a valid CRON expression'
+                $value.' is not a valid CRON expression'
             );
         }
 
-        foreach ($this->cronParts as $position => $part) {
-            $this->setPart($position, $part);
+        foreach ( $this->cronParts as $position => $part ) {
+            $this->setPart( $position,$part );
         }
 
         return $this;
@@ -143,17 +143,17 @@ class CronExpression
     /**
      * Set part of the CRON expression
      *
-     * @param int    $position The position of the CRON expression to set
-     * @param string $value    The value to set
+     * @param int $position The position of the CRON expression to set
+     * @param string $value The value to set
      *
      * @return CronExpression
      * @throws \InvalidArgumentException if the value is not valid for the part
      */
-    public function setPart($position, $value)
+    public function setPart($position,$value)
     {
-        if (!$this->fieldFactory->getField($position)->validate($value)) {
+        if (!$this->fieldFactory->getField( $position )->validate( $value )) {
             throw new InvalidArgumentException(
-                'Invalid CRON field value ' . $value . ' at position ' . $position
+                'Invalid CRON field value '.$value.' at position '.$position
             );
         }
 
@@ -179,59 +179,59 @@ class CronExpression
     /**
      * Get a next run date relative to the current date or a specific date
      *
-     * @param string|\DateTime $currentTime      Relative calculation date
-     * @param int              $nth              Number of matches to skip before returning a
+     * @param string|\DateTime $currentTime Relative calculation date
+     * @param int $nth Number of matches to skip before returning a
      *                                           matching next run date.  0, the default, will return the current
      *                                           date and time if the next run date falls on the current date and
      *                                           time.  Setting this value to 1 will skip the first match and go to
      *                                           the second match.  Setting this value to 2 will skip the first 2
      *                                           matches and so on.
-     * @param bool             $allowCurrentDate Set to TRUE to return the current date if
+     * @param bool $allowCurrentDate Set to TRUE to return the current date if
      *                                           it matches the cron expression.
      *
      * @return \DateTime
      * @throws \RuntimeException on too many iterations
      */
-    public function getNextRunDate($currentTime = 'now', $nth = 0, $allowCurrentDate = false)
+    public function getNextRunDate($currentTime = 'now',$nth = 0,$allowCurrentDate = false)
     {
-        return $this->getRunDate($currentTime, $nth, false, $allowCurrentDate);
+        return $this->getRunDate( $currentTime,$nth,false,$allowCurrentDate );
     }
 
     /**
      * Get a previous run date relative to the current date or a specific date
      *
-     * @param string|\DateTime $currentTime      Relative calculation date
-     * @param int              $nth              Number of matches to skip before returning
-     * @param bool             $allowCurrentDate Set to TRUE to return the
+     * @param string|\DateTime $currentTime Relative calculation date
+     * @param int $nth Number of matches to skip before returning
+     * @param bool $allowCurrentDate Set to TRUE to return the
      *                                           current date if it matches the cron expression
      *
      * @return \DateTime
      * @throws \RuntimeException on too many iterations
      * @see \Cron\CronExpression::getNextRunDate
      */
-    public function getPreviousRunDate($currentTime = 'now', $nth = 0, $allowCurrentDate = false)
+    public function getPreviousRunDate($currentTime = 'now',$nth = 0,$allowCurrentDate = false)
     {
-        return $this->getRunDate($currentTime, $nth, true, $allowCurrentDate);
+        return $this->getRunDate( $currentTime,$nth,true,$allowCurrentDate );
     }
 
     /**
      * Get multiple run dates starting at the current date or a specific date
      *
-     * @param int              $total            Set the total number of dates to calculate
-     * @param string|\DateTime $currentTime      Relative calculation date
-     * @param bool             $invert           Set to TRUE to retrieve previous dates
-     * @param bool             $allowCurrentDate Set to TRUE to return the
+     * @param int $total Set the total number of dates to calculate
+     * @param string|\DateTime $currentTime Relative calculation date
+     * @param bool $invert Set to TRUE to retrieve previous dates
+     * @param bool $allowCurrentDate Set to TRUE to return the
      *                                           current date if it matches the cron expression
      *
      * @return array Returns an array of run dates
      */
-    public function getMultipleRunDates($total, $currentTime = 'now', $invert = false, $allowCurrentDate = false)
+    public function getMultipleRunDates($total,$currentTime = 'now',$invert = false,$allowCurrentDate = false)
     {
         $matches = array();
-        for ($i = 0; $i < max(0, $total); $i++) {
+        for ( $i = 0; $i < max( 0,$total ); $i++ ) {
             try {
-                $matches[] = $this->getRunDate($currentTime, $i, $invert, $allowCurrentDate);
-            } catch (RuntimeException $e) {
+                $matches[] = $this->getRunDate( $currentTime,$i,$invert,$allowCurrentDate );
+            } catch ( RuntimeException $e ) {
                 break;
             }
         }
@@ -251,8 +251,8 @@ class CronExpression
     public function getExpression($part = null)
     {
         if (null === $part) {
-            return implode(' ', $this->cronParts);
-        } elseif (array_key_exists($part, $this->cronParts)) {
+            return implode( ' ',$this->cronParts );
+        } elseif (array_key_exists( $part,$this->cronParts )) {
             return $this->cronParts[$part];
         }
 
@@ -281,29 +281,29 @@ class CronExpression
     public function isDue($currentTime = 'now')
     {
         if ('now' === $currentTime) {
-            $currentDate = date('Y-m-d H:i');
-            $currentTime = strtotime($currentDate);
+            $currentDate = date( 'Y-m-d H:i' );
+            $currentTime = strtotime( $currentDate );
         } elseif ($currentTime instanceof DateTime) {
             $currentDate = clone $currentTime;
             // Ensure time in 'current' timezone is used
-            $currentDate->setTimezone(new DateTimeZone(date_default_timezone_get()));
-            $currentDate = $currentDate->format('Y-m-d H:i');
-            $currentTime = strtotime($currentDate);
+            $currentDate->setTimezone( new DateTimeZone( date_default_timezone_get() ) );
+            $currentDate = $currentDate->format( 'Y-m-d H:i' );
+            $currentTime = strtotime( $currentDate );
         } elseif ($currentTime instanceof DateTimeImmutable) {
-            $currentDate = DateTime::createFromFormat('U', $currentTime->format('U'));
-            $currentDate->setTimezone(new DateTimeZone(date_default_timezone_get()));
-            $currentDate = $currentDate->format('Y-m-d H:i');
-            $currentTime = strtotime($currentDate);
+            $currentDate = DateTime::createFromFormat( 'U',$currentTime->format( 'U' ) );
+            $currentDate->setTimezone( new DateTimeZone( date_default_timezone_get() ) );
+            $currentDate = $currentDate->format( 'Y-m-d H:i' );
+            $currentTime = strtotime( $currentDate );
         } else {
-            $currentTime = new DateTime($currentTime);
-            $currentTime->setTime($currentTime->format('H'), $currentTime->format('i'), 0);
-            $currentDate = $currentTime->format('Y-m-d H:i');
+            $currentTime = new DateTime( $currentTime );
+            $currentTime->setTime( $currentTime->format( 'H' ),$currentTime->format( 'i' ),0 );
+            $currentDate = $currentTime->format( 'Y-m-d H:i' );
             $currentTime = $currentTime->getTimeStamp();
         }
 
         try {
-            return $this->getNextRunDate($currentDate, 0, true)->getTimestamp() == $currentTime;
-        } catch (Exception $e) {
+            return $this->getNextRunDate( $currentDate,0,true )->getTimestamp() == $currentTime;
+        } catch ( Exception $e ) {
             return false;
         }
     }
@@ -311,56 +311,56 @@ class CronExpression
     /**
      * Get the next or previous run date of the expression relative to a date
      *
-     * @param string|\DateTime $currentTime      Relative calculation date
-     * @param int              $nth              Number of matches to skip before returning
-     * @param bool             $invert           Set to TRUE to go backwards in time
-     * @param bool             $allowCurrentDate Set to TRUE to return the
+     * @param string|\DateTime $currentTime Relative calculation date
+     * @param int $nth Number of matches to skip before returning
+     * @param bool $invert Set to TRUE to go backwards in time
+     * @param bool $allowCurrentDate Set to TRUE to return the
      *                                           current date if it matches the cron expression
      *
      * @return \DateTime
      * @throws \RuntimeException on too many iterations
      */
-    protected function getRunDate($currentTime = null, $nth = 0, $invert = false, $allowCurrentDate = false)
+    protected function getRunDate($currentTime = null,$nth = 0,$invert = false,$allowCurrentDate = false)
     {
         if ($currentTime instanceof DateTime) {
             $currentDate = clone $currentTime;
         } elseif ($currentTime instanceof DateTimeImmutable) {
-            $currentDate = DateTime::createFromFormat('U', $currentTime->format('U'));
-            $currentDate->setTimezone($currentTime->getTimezone());
+            $currentDate = DateTime::createFromFormat( 'U',$currentTime->format( 'U' ) );
+            $currentDate->setTimezone( $currentTime->getTimezone() );
         } else {
-            $currentDate = new DateTime($currentTime ?: 'now');
-            $currentDate->setTimezone(new DateTimeZone(date_default_timezone_get()));
+            $currentDate = new DateTime( $currentTime ?: 'now' );
+            $currentDate->setTimezone( new DateTimeZone( date_default_timezone_get() ) );
         }
 
-        $currentDate->setTime($currentDate->format('H'), $currentDate->format('i'), 0);
+        $currentDate->setTime( $currentDate->format( 'H' ),$currentDate->format( 'i' ),0 );
         $nextRun = clone $currentDate;
-        $nth = (int) $nth;
+        $nth     = (int)$nth;
 
         // We don't have to satisfy * or null fields
-        $parts = array();
+        $parts  = array();
         $fields = array();
-        foreach (self::$order as $position) {
-            $part = $this->getExpression($position);
+        foreach ( self::$order as $position ) {
+            $part = $this->getExpression( $position );
             if (null === $part || '*' === $part) {
                 continue;
             }
-            $parts[$position] = $part;
-            $fields[$position] = $this->fieldFactory->getField($position);
+            $parts[$position]  = $part;
+            $fields[$position] = $this->fieldFactory->getField( $position );
         }
 
         // Set a hard limit to bail on an impossible date
-        for ($i = 0; $i < $this->maxIterationCount; $i++) {
+        for ( $i = 0; $i < $this->maxIterationCount; $i++ ) {
 
-            foreach ($parts as $position => $part) {
+            foreach ( $parts as $position => $part ) {
                 $satisfied = false;
                 // Get the field object used to validate this part
                 $field = $fields[$position];
                 // Check if this is singular or a list
-                if (strpos($part, ',') === false) {
-                    $satisfied = $field->isSatisfiedBy($nextRun, $part);
+                if (strpos( $part,',' ) === false) {
+                    $satisfied = $field->isSatisfiedBy( $nextRun,$part );
                 } else {
-                    foreach (array_map('trim', explode(',', $part)) as $listPart) {
-                        if ($field->isSatisfiedBy($nextRun, $listPart)) {
+                    foreach ( array_map( 'trim',explode( ',',$part ) ) as $listPart ) {
+                        if ($field->isSatisfiedBy( $nextRun,$listPart )) {
                             $satisfied = true;
                             break;
                         }
@@ -369,14 +369,14 @@ class CronExpression
 
                 // If the field is not satisfied, then start over
                 if (!$satisfied) {
-                    $field->increment($nextRun, $invert, $part);
+                    $field->increment( $nextRun,$invert,$part );
                     continue 2;
                 }
             }
 
             // Skip this match if needed
-            if ((!$allowCurrentDate && $nextRun == $currentDate) || --$nth > -1) {
-                $this->fieldFactory->getField(0)->increment($nextRun, $invert, isset($parts[0]) ? $parts[0] : null);
+            if (( !$allowCurrentDate && $nextRun == $currentDate ) || --$nth > -1) {
+                $this->fieldFactory->getField( 0 )->increment( $nextRun,$invert,isset( $parts[0] ) ? $parts[0] : null );
                 continue;
             }
 
@@ -384,7 +384,7 @@ class CronExpression
         }
 
         // @codeCoverageIgnoreStart
-        throw new RuntimeException('Impossible CRON expression');
+        throw new RuntimeException( 'Impossible CRON expression' );
         // @codeCoverageIgnoreEnd
     }
 }

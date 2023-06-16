@@ -1,11 +1,11 @@
 {
     "name": "yzh52521/schedule",
-    "description": "task schedule,schedule,thinkphp schedule,任务调度",
+    "description": "task schedule,schedule,thinkphp6+ schedule,任务调度",
     "keywords": [
         "schedule",
         "task schedule",
         "thinkphp",
-        "thinkphp6+",
+        "thinkphp6",
         "thinkphp5.1",
         "think-schedule"
     ],

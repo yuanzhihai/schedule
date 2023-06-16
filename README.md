@@ -127,4 +127,17 @@ $this->command('foo')->monthly()->when(function()
     return true;
 });
 ```
+队列任务调度
+
+job 方法可以用来调度 queued job。此方法提供了一种快捷方式来调度任务
+```
+use app\jobs\Heartbeat;
+$this->job(new Heartbeat)->everyFiveMinutes();
+```
+job 方法提供了可选的第二，三参数，分别指定任务将被放置的业务数据和队列名
+
+```
+use app\jobs\Heartbeat;
+$this->job(new Heartbeat,$data='',$queue = null)->everyFiveMinutes();
+```
 

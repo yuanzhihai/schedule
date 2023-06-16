@@ -4,6 +4,7 @@ namespace schedule\console;
 
 use Carbon\Carbon;
 use Closure;
+use Cron\CronExpression;
 use think\Container;
 
 class Event
@@ -16,15 +17,17 @@ class Event
 
     public $timezone;
 
-    public $expression = '* * * * * *';
+    public $expression = '* * * * *';
 
     protected $filters = [];
+
+    protected $rejects = [];
 
     protected $beforeCallbacks = [];
 
     protected $afterCallbacks = [];
 
-    public function __construct($command, array $parameters = [])
+    public function __construct($command,array $parameters = [])
     {
         $this->command = $command;
 
@@ -33,22 +36,32 @@ class Event
 
     public function run(Container $container)
     {
-        $this->callBeforeCallbacks($container);
+        $this->callBeforeCallbacks( $container );
 
-        if (strpos(\think\App::VERSION, '6') !== false) {
-            \think\facade\Console::call($this->command, $this->parameters, 'console');
-        }else{
-            \think\Console::call($this->command, $this->parameters, 'console');
+        if (strpos( \think\App::VERSION,'6' ) !== false) {
+            \think\facade\Console::call( $this->command,$this->parameters,'console' );
+        } else {
+            \think\Console::call( $this->command,$this->parameters,'console' );
         }
 
 
-        $this->callAfterCallbacks($container);
+        $this->callAfterCallbacks( $container );
     }
 
+    /**
+     * 过滤
+     * @param $app
+     * @return bool
+     */
     public function filtersPass($app)
     {
-        foreach ($this->filters as $callback) {
-            if (! $app->call($callback)) {
+        foreach ( $this->filters as $callback ) {
+            if (!$app->call( $callback )) {
+                return false;
+            }
+        }
+        foreach ( $this->rejects as $callback ) {
+            if ($app->call( $callback )) {
                 return false;
             }
         }
@@ -56,6 +69,11 @@ class Event
         return true;
     }
 
+    /**
+     * 是否到期执行
+     * @param $app
+     * @return bool
+     */
     public function isDue($app)
     {
         return $this->expressionPasses();
@@ -66,15 +84,24 @@ class Event
         $date = Carbon::now();
 
         if ($this->timezone) {
-            $date->setTimezone($this->timezone);
+            $date->setTimezone( $this->timezone );
         }
 
-        return CronExpression::factory($this->expression)->isDue($date->toDateTimeString());
+        return CronExpression::factory( $this->expression )->isDue( $date->toDateTimeString() );
+    }
+
+    public function skip($callback)
+    {
+        $this->rejects[] = is_callable( $callback ) ? $callback : function () use ($callback) {
+            return $callback;
+        };;
+
+        return $this;
     }
 
     public function when($callback)
     {
-        $this->filters[] = is_callable($callback) ? $callback : function () use ($callback) {
+        $this->filters[] = is_callable( $callback ) ? $callback : function () use ($callback) {
             return $callback;
         };
 
@@ -91,7 +118,7 @@ class Event
 
     public function after(Closure $callback)
     {
-        return $this->then($callback);
+        return $this->then( $callback );
     }
 
     public function then(Closure $callback)
@@ -103,17 +130,18 @@ class Event
 
     public function callBeforeCallbacks(Container $container)
     {
-        foreach ($this->beforeCallbacks as $callback) {
-            $container->invokeFunction($callback);
+        foreach ( $this->beforeCallbacks as $callback ) {
+            $container->invokeFunction( $callback );
         }
     }
 
     public function callAfterCallbacks(Container $container)
     {
-        foreach ($this->afterCallbacks as $callback) {
-            $container->invokeFunction($callback);
+        foreach ( $this->afterCallbacks as $callback ) {
+            $container->invokeFunction( $callback );
         }
     }
+
 
     public function timezone($timezone)
     {

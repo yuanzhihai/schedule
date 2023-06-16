@@ -14,7 +14,11 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=7.1",
+        "dragonmantank/cron-expression":"^3.3",
         "nesbot/carbon": "^2.0"
+    },
+    "require-dev":{
+      "topthink/framework": "^6.1.2"
     },
     "autoload": {
         "psr-4": {

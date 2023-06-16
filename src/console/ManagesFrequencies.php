@@ -20,6 +20,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 设置区间时间
      * Schedule the event to run between start and end time.
      *
      * @param string $startTime
@@ -32,6 +33,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 排除区间时间
      * Schedule the event to not run between start and end time.
      *
      * @param string $startTime
@@ -52,16 +54,27 @@ trait ManagesFrequencies
      */
     private function inTimeInterval($startTime,$endTime)
     {
-        return function () use ($startTime,$endTime) {
-            return Carbon::now( $this->timezone )->between(
-                Carbon::parse( $startTime,$this->timezone ),
-                Carbon::parse( $endTime,$this->timezone ),
-                true
-            );
+        [$now,$startTime,$endTime] = [
+            Carbon::now( $this->timezone ),
+            Carbon::parse( $startTime,$this->timezone ),
+            Carbon::parse( $endTime,$this->timezone ),
+        ];
+
+        if ($endTime->lessThan( $startTime )) {
+            if ($startTime->greaterThan( $now )) {
+                $startTime->subDay( 1 );
+            } else {
+                $endTime->addDay( 1 );
+            }
+        }
+
+        return function () use ($now,$startTime,$endTime) {
+            return $now->between( $startTime,$endTime );
         };
     }
 
     /**
+     * 每分钟执行
      * Schedule the event to run every minute.
      *
      * @return $this
@@ -72,16 +85,46 @@ trait ManagesFrequencies
     }
 
     /**
-     * Schedule the event to run every five minutes.
+     * 每两分钟执行
+     *
+     * @return $this
+     */
+    public function everyTwoMinutes()
+    {
+        return $this->spliceIntoPosition(1, '*/2');
+    }
+
+    /**
+     * 每三分钟执行
+     *
+     * @return $this
+     */
+    public function everyThreeMinutes()
+    {
+        return $this->spliceIntoPosition(1, '*/3');
+    }
+
+    /**
+     * 每四分钟执行
+     *
+     * @return $this
+     */
+    public function everyFourMinutes()
+    {
+        return $this->spliceIntoPosition(1, '*/4');
+    }
+    /**
+     * 每5分钟执行
      *
      * @return $this
      */
     public function everyFiveMinutes()
     {
-        return $this->spliceIntoPosition( 1,'*/5' );
+        return $this->spliceIntoPosition(1, '*/5');
     }
 
     /**
+     * 每10分钟执行
      * Schedule the event to run every ten minutes.
      *
      * @return $this
@@ -92,6 +135,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 每15分钟执行
      * Schedule the event to run every fifteen minutes.
      *
      * @return $this
@@ -102,6 +146,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 每30分钟执行
      * Schedule the event to run every thirty minutes.
      *
      * @return $this
@@ -112,6 +157,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 每小时执行
      * Schedule the event to run hourly.
      *
      * @return $this
@@ -122,6 +168,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 按小时延期执行
      * Schedule the event to run hourly at a given offset in the hour.
      *
      * @param int $offset
@@ -133,6 +180,50 @@ trait ManagesFrequencies
     }
 
     /**
+     * 每两小时执行
+     *
+     * @return $this
+     */
+    public function everyTwoHours()
+    {
+        return $this->spliceIntoPosition(1, 0)
+            ->spliceIntoPosition(2, '*/2');
+    }
+
+    /**
+     * 每三小时执行
+     *
+     * @return $this
+     */
+    public function everyThreeHours()
+    {
+        return $this->spliceIntoPosition(1, 0)
+            ->spliceIntoPosition(2, '*/3');
+    }
+    /**
+     * 每四小时执行
+     *
+     * @return $this
+     */
+    public function everyFourHours()
+    {
+        return $this->spliceIntoPosition(1, 0)
+            ->spliceIntoPosition(2, '*/4');
+    }
+
+    /**
+     * 每六小时执行
+     *
+     * @return $this
+     */
+    public function everySixHours()
+    {
+        return $this->spliceIntoPosition(1, 0)
+            ->spliceIntoPosition(2, '*/6');
+    }
+
+    /**
+     * 按天执行
      * Schedule the event to run daily.
      *
      * @return $this
@@ -144,6 +235,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 指定时间执行
      * Schedule the command at a given time.
      *
      * @param string $time
@@ -155,6 +247,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 指定时间执行
      * Schedule the event to run daily at a given time (10:00, 19:30, etc).
      *
      * @param string $time
@@ -169,6 +262,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 每天执行两次
      * Schedule the event to run twice daily.
      *
      * @param int $first
@@ -184,6 +278,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 工作日执行
      * Schedule the event to run only on weekdays.
      *
      * @return $this
@@ -194,6 +289,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 周末执行
      * Schedule the event to run only on weekends.
      *
      * @return $this
@@ -204,6 +300,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 星期一执行
      * Schedule the event to run only on Mondays.
      *
      * @return $this
@@ -214,6 +311,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 星期二执行
      * Schedule the event to run only on Tuesdays.
      *
      * @return $this
@@ -224,6 +322,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 星期三执行
      * Schedule the event to run only on Wednesdays.
      *
      * @return $this
@@ -234,6 +333,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 星期四执行
      * Schedule the event to run only on Thursdays.
      *
      * @return $this
@@ -244,6 +344,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 星期五执行
      * Schedule the event to run only on Fridays.
      *
      * @return $this
@@ -254,6 +355,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 星期六执行
      * Schedule the event to run only on Saturdays.
      *
      * @return $this
@@ -264,6 +366,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 星期日执行
      * Schedule the event to run only on Sundays.
      *
      * @return $this
@@ -274,6 +377,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 按周执行
      * Schedule the event to run weekly.
      *
      * @return $this
@@ -286,6 +390,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 指定每周的时间执行
      * Schedule the event to run weekly on a given day and time.
      *
      * @param int $day
@@ -300,6 +405,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 按月执行
      * Schedule the event to run monthly.
      *
      * @return $this
@@ -312,6 +418,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 指定每月的执行时间
      * Schedule the event to run monthly on a given day and time.
      *
      * @param int $day
@@ -326,6 +433,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 每月执行两次
      * Schedule the event to run twice monthly.
      *
      * @param int $first
@@ -342,6 +450,20 @@ trait ManagesFrequencies
     }
 
     /**
+     * 每月最后一天几点执行
+     *
+     * @param  string  $time
+     * @return $this
+     */
+    public function lastDayOfMonth($time = '0:0')
+    {
+        $this->dailyAt($time);
+
+        return $this->spliceIntoPosition(3, Carbon::now()->endOfMonth()->day);
+    }
+
+    /**
+     * 按季度执行
      * Schedule the event to run quarterly.
      *
      * @return $this
@@ -355,6 +477,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 按年执行
      * Schedule the event to run yearly.
      *
      * @return $this
@@ -368,6 +491,23 @@ trait ManagesFrequencies
     }
 
     /**
+     * 按年设置月日时间执行
+     *
+     * @param  int  $month
+     * @param  int|string  $dayOfMonth
+     * @param  string  $time
+     * @return $this
+     */
+    public function yearlyOn($month = 1, $dayOfMonth = 1, $time = '0:0')
+    {
+        $this->dailyAt($time);
+
+        return $this->spliceIntoPosition(3, $dayOfMonth)
+            ->spliceIntoPosition(4, $month);
+    }
+
+    /**
+     * 按周设置天执行
      * Set the days of the week the command should run on.
      *
      * @param array|mixed $days
@@ -381,6 +521,7 @@ trait ManagesFrequencies
     }
 
     /**
+     * 设置时区
      * Set the timezone the date should be evaluated on.
      *
      * @param \DateTimeZone|string $timezone

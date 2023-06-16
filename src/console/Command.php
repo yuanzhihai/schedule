@@ -40,7 +40,7 @@ class Command extends ThinkCommand
         return $event;
     }
 
-    public function job($job,$data,$queue = null)
+    public function job($job, $data = '',$queue = null)
     {
         return $this->call( function ($data) use ($job,$queue) {
             Queue::push( $job,$data,$queue );

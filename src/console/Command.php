@@ -42,7 +42,7 @@ class Command extends ThinkCommand
     public function job($job, $data = '', $queue = null)
     {
         return $this->call(function ($data) use ($job, $queue) {
-            if (strpos(\think\App::VERSION, '6') !== false) {
+            if (\think\App::VERSION >= 6) {
                 \think\facade\Queue::push($job, $data, $queue);
             } else {
                 \think\Queue::push($job, $data, $queue);

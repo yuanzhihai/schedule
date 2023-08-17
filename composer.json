@@ -21,12 +21,5 @@
         "psr-4": {
             "schedule\\": "src/"
         }
-    },
-    "extra": {
-        "think": {
-            "services": [
-                "schedule\\Service"
-            ]
-        }
     }
 }

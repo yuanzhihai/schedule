@@ -2,6 +2,7 @@
 
 namespace schedule;
 
+use schedule\scheduling\ScheduleClearCacheCommand;
 use schedule\scheduling\ScheduleInitCommand;
 use schedule\scheduling\ScheduleListCommand;
 use schedule\scheduling\ScheduleRunCommand;
@@ -16,6 +17,7 @@ class ScheduleService extends Service
         // 服务启动
         $this->commands(
             [
+                ScheduleClearCacheCommand::class,
                 ScheduleInitCommand::class,
                 ScheduleListCommand::class,
                 ScheduleRunCommand::class,

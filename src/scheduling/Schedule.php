@@ -59,6 +59,8 @@ class Schedule
      */
     protected $mutexCache = [];
 
+    protected $dispatch;
+
     public function __construct($timezone = null)
     {
         $this->timezone = $timezone;
@@ -70,7 +72,7 @@ class Schedule
         }
         $container = Container::getInstance();
 
-        $this->queue = Queue::class;
+        $this->dispatch = $container->make(Queue::class);
 
         $this->eventMutex = $container->bound(EventMutex::class)
             ? $container->make(EventMutex::class)
@@ -160,20 +162,24 @@ class Schedule
     protected function dispatchToQueue($job, $queue, $connection)
     {
         if (in_array(Queueable::class, class_uses_recursive($job))) {
-            $queue = $this->queue->connection($job->connection);
+            $dispatch = $this->dispatch->connection($connection);
             if ($job->delay > 0) {
-                $queue->later($job->delay, $job, '', $job->queue);
+                $dispatch->later($job->delay, $job, '', $queue);
             } else {
-                $queue->push($job, '', $job->queue);
+                $dispatch->push($job, '', $queue);
             }
         } else {
-            $this->queue->push($job);
+            $this->dispatch->push($job);
         }
     }
 
+    /**
+     * @param object $job
+     * @return void
+     */
     protected function dispatchNow($job)
     {
-        Container::getInstance()->invoke([$job, 'handle'], [], true);
+        $this->dispatch->push($job);
     }
 
     /**

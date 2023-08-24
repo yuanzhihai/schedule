@@ -81,11 +81,11 @@ $schedule->call(new DeleteRecentUsers)->daily();
 ```php
 php think schedule:list
 ```
-### think 命令调度
+### thinkphp 命令调度
 
-调度方式不仅有调用闭包，还有调用 Think commands 和操作系统命令。例如，你可以给 command 方法传递命令名称或类来调度一个 <code>Think</code> 命令：
+调度方式不仅有调用闭包，还有调用 Thinkphp commands 和操作系统命令。例如，你可以给 command 方法传递命令名称或类来调度一个 <code>Thinkphp</code> 命令：
 
-当使用命令类名调度 <code>Think</code> 命令时，你可以通过一个数组传递附加的命令行参数，且这些参数需要在命令触发时提供：
+当使用命令类名调度 <code>Thinkphp</code> 命令时，你可以通过一个数组传递附加的命令行参数，且这些参数需要在命令触发时提供：
 
 ```php
 
@@ -266,13 +266,13 @@ protected function scheduleTimezone(): DateTimeZone|string|null
 ```php
 $schedule->command('email:send')->withoutOverlapping();
 ```
-在此例中，若 <code>email:send</code> Think 命令 还未运行，那它将会每分钟执行一次。如果你的任务执行时间非常不确定，导致你无法准确预测任务的执行时间，那 <code>withoutOverlapping</code> 方法会特别有用。
+在此例中，若 <code>email:send</code> Thinkphp 命令 还未运行，那它将会每分钟执行一次。如果你的任务执行时间非常不确定，导致你无法准确预测任务的执行时间，那 <code>withoutOverlapping</code> 方法会特别有用。
 如有需要，你可以在 <code>withoutOverlapping</code> 锁过期之前，指定它的过期分钟数。默认情况下，这个锁会在 24 小时后过期
 
 ```php
 $schedule->command('email:send')->withoutOverlapping(10);
 ```
-上面这种场景中，<code>withoutOverlapping</code> 方法使用应用程序的 缓存 获取锁。如有必要，可以使用 <code>schedule:clear-cache</code> Think 命令清除这些缓存锁。这通常只有在任务由于意外的服务器问题而卡住时才需要。
+上面这种场景中，<code>withoutOverlapping</code> 方法使用应用程序的 缓存 获取锁。如有必要，可以使用 <code>schedule:clear-cache</code> Thinkphp 命令清除这些缓存锁。这通常只有在任务由于意外的服务器问题而卡住时才需要。
 
 ### 任务只运行在一台服务器上
 <pre>

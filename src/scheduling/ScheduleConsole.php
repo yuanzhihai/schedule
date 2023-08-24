@@ -3,10 +3,7 @@
 
 namespace schedule\scheduling;
 
-use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use think\facade\App;
-use think\helper\Str;
+use think\App;
 
 
 class ScheduleConsole
@@ -16,6 +13,16 @@ class ScheduleConsole
      * @var Schedule
      */
     public static $schedule;
+
+    protected $app;
+
+    public function __construct(App $app)
+    {
+        if (!defined('THINK_BINARY')) {
+            define('THINK_BINARY', 'think');
+        }
+        $this->app = $app;
+    }
 
 
     /**
@@ -40,10 +47,21 @@ class ScheduleConsole
      */
     protected function defineSchedule()
     {
-        $schedule = new Schedule();
+        $schedule = new Schedule($this->scheduleTimezone());
+        $schedule->useCache($this->scheduleCache());
         $this->schedule($schedule);
         static::$schedule = $schedule;
         return $this;
+    }
+
+    protected function scheduleTimezone()
+    {
+        return $this->app->config->get('app.default_timezone');
+    }
+
+    protected function scheduleCache()
+    {
+        return $this->app->config->get('cache.default', 'file');
     }
 
 

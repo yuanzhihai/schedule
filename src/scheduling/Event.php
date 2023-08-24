@@ -5,11 +5,15 @@ namespace schedule\scheduling;
 use Carbon\Carbon;
 use Closure;
 use Cron\CronExpression;
+use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Exception\TransferException;
 use schedule\ProcessUtils;
 use Symfony\Component\Process\Process as SymfonyProcess;
 use think\Container;
+use think\exception\Handle;
 use think\helper\Arr;
 use mailer\Mailer;
+use Psr\Http\Client\ClientExceptionInterface;
 
 class Event
 {
@@ -635,6 +639,91 @@ class Event
     public function shouldRepeatNow()
     {
         return $this->isRepeatable() && $this->lastChecked?->diffInSeconds() >= $this->repeatSeconds;
+    }
+
+    /**
+     * Register a callback to ping a given URL before the job runs.
+     *
+     * @param  string  $url
+     * @return $this
+     */
+    public function pingBefore($url)
+    {
+        return $this->before($this->pingCallback($url));
+    }
+
+    /**
+     * Register a callback to ping a given URL before the job runs if the given condition is true.
+     *
+     * @param  bool  $value
+     * @param  string  $url
+     * @return $this
+     */
+    public function pingBeforeIf($value, $url)
+    {
+        return $value ? $this->pingBefore($url) : $this;
+    }
+
+    /**
+     * Register a callback to ping a given URL after the job runs.
+     *
+     * @param  string  $url
+     * @return $this
+     */
+    public function thenPing($url)
+    {
+        return $this->then($this->pingCallback($url));
+    }
+
+    /**
+     * Register a callback to ping a given URL after the job runs if the given condition is true.
+     *
+     * @param  bool  $value
+     * @param  string  $url
+     * @return $this
+     */
+    public function thenPingIf($value, $url)
+    {
+        return $value ? $this->thenPing($url) : $this;
+    }
+
+    /**
+     * Register a callback to ping a given URL if the operation succeeds.
+     *
+     * @param  string  $url
+     * @return $this
+     */
+    public function pingOnSuccess($url)
+    {
+        return $this->onSuccess($this->pingCallback($url));
+    }
+
+    /**
+     * Register a callback to ping a given URL if the operation fails.
+     *
+     * @param  string  $url
+     * @return $this
+     */
+    public function pingOnFailure($url)
+    {
+        return $this->onFailure($this->pingCallback($url));
+    }
+
+    /**
+     * Get the callback that pings the given URL.
+     *
+     * @param  string  $url
+     * @return \Closure
+     */
+    protected function pingCallback($url)
+    {
+        return function (Container $container, HttpClient $http) use ($url) {
+            try {
+                $http->request('GET', $url);
+            } catch (ClientExceptionInterface|TransferException $e) {
+                $container->make(Handler::class)->report($e);
+            }
+        };
     }
 
     /**

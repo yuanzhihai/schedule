@@ -72,6 +72,7 @@ class Schedule
         }
         $container = Container::getInstance();
 
+        /** @var Queue $queue */
         $this->dispatch = $container->make(Queue::class);
 
         $this->eventMutex = $container->bound(EventMutex::class)

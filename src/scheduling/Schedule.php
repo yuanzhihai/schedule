@@ -130,7 +130,7 @@ class Schedule
             if ($job instanceof ShouldQueue) {
                 $this->dispatchToQueue($job, $queue ?? $job->queue, $connection ?? $job->connection);
             } else {
-                $this->dispatchNow($job);
+                $this->dispatchNow($job,$queue,$connection);
             }
         })->name(is_string($job) ? $job : get_class($job));
     }
@@ -169,7 +169,7 @@ class Schedule
                 $dispatch->push($job, '', $queue);
             }
         } else {
-            $this->dispatch->push($job);
+            $this->dispatch->connection($connection)->push($job,'',$queue);
         }
     }
 
@@ -177,9 +177,9 @@ class Schedule
      * @param object $job
      * @return void
      */
-    protected function dispatchNow($job)
+    protected function dispatchNow($job,$queue,$connection)
     {
-        $this->dispatch->push($job);
+        $this->dispatch->connection($connection)->push($job,'',$queue);
     }
 
     /**

@@ -1,7 +1,7 @@
 # schedule
 thinkphp 任务调度
 
-代码实现主要参考 laravel 相关用法请参考 laravel
+代码实现主要参考 laravel Schedule 任务调度  https://learnku.com/docs/laravel/10.x/scheduling/14875
 
 具体用法：
 
@@ -52,14 +52,7 @@ return [
 ];
 ```
 
-第三步,运行以下命令
-
-```
-php /path/to/think schedule:run
-```
-
 时间表范例
-此扩展支持Laravel Schedule的所有功能
 
 ### 定义调度
 我们计划每天午夜执行一个闭包，这个闭包会执行一次数据库语句去清空一张表
@@ -97,7 +90,7 @@ $schedule->command(SendEmails::class, ['Taylor', '--force'])->daily();
 
 ```
 ### 队列任务调度
-<code>job</code> 方法可以用来调度 queued job。此方法提供了一种快捷方式来调度任务，而无需使用 <code>call</code> 方法创建闭包来调度任务：\
+<code>job</code> 方法可以用来调度 queued job。此方法提供了一种快捷方式来调度任务，而无需使用 <code>call</code> 方法创建闭包来调度任务：
 ```php
 use app\jhobs\Heartbeat;
 
